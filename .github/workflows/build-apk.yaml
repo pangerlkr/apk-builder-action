@@ -44,8 +44,34 @@ jobs:
           fi
 
       - name: Build APK
-        working-directory: ${{ github.event.inputs.subdir && format('./workspace/{0}', github.event.inputs.subdir) || './workspace' }}
+        working-directory: ./workspace
         run: |
+          # Determine the actual build directory
+          if [[ -n "${{ github.event.inputs.subdir }}" ]]; then
+            BUILD_DIR="${{ github.event.inputs.subdir }}"
+          else
+            # Check if Gradle build files exist in the current directory
+            if [ -f "settings.gradle" ] || [ -f "settings.gradle.kts" ] || [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
+              BUILD_DIR="."
+            else
+              # Search for Gradle build in common subdirectories
+              for dir in android app src .; do
+                if [ -f "$dir/settings.gradle" ] || [ -f "$dir/settings.gradle.kts" ] || [ -f "$dir/build.gradle" ] || [ -f "$dir/build.gradle.kts" ]; then
+                  BUILD_DIR="$dir"
+                  break
+                fi
+              done
+
+              if [ -z "$BUILD_DIR" ]; then
+                echo "Error: Could not find Gradle build files. Please specify the 'subdir' input parameter."
+                exit 1
+              fi
+            fi
+          fi
+
+          echo "Building in directory: $BUILD_DIR"
+          cd "$BUILD_DIR"
+
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
           chmod +x gradlew
 
