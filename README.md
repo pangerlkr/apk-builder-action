@@ -7,7 +7,7 @@ This GitHub action completely automates the _release_ or _debug_ APK building pr
 
 ## Usage
 
-1. [Fork](https://github.com/ni554n/apk-builder-action/fork) this repo on GitHub
+1. [Fork](https://github.com/pangerlkr/apk-builder-action/fork) this repo on GitHub
 2. Go to the [Build Android APK Workflow](/../../actions/workflows/build-apk.yaml) and select `Run workflow` dropdown menu
 3. Enter the Git repository URL of the Android project
 4. Run the workflow and wait for the `apk-archive` zip artifact to appear at the bottom of the **_Summary_** tab on that run
@@ -17,7 +17,10 @@ This GitHub action completely automates the _release_ or _debug_ APK building pr
 
 ## Information
 
-**Author:** [Nissan Ahmed](https://anissan.com) ([@ni554n](https://twitter.com/ni554n))
+### Authors & Contributors
 
-**Donate:** [PayPal](https://paypal.me/ni554n)
+| Role | Name | GitHub | Links |
+|------|------|--------|-------|
+| Original Author | Nissan Ahmed | [@ni554n](https://github.com/ni554n) | [Website](https://anissan.com) • [Twitter](https://twitter.com/ni554n) • [Donate](https://paypal.me/ni554n) |
+| Current Maintainer | Pangerkumzuk Longkumer | [@pangerlkr](https://github.com/pangerlkr) | Unlinked fork and updated for compatibility with current repos |
 <img src="https://ping.anissan.com/?repo=apk-builder-action" width="0" height="0" align="right">
