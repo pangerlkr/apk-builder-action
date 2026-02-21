@@ -44,7 +44,7 @@ jobs:
           fi
 
       - name: Build APK
-        working-directory: ./workspace/${{ github.event.inputs.subdir }}
+        working-directory: ${{ github.event.inputs.subdir && format('./workspace/{0}', github.event.inputs.subdir) || './workspace' }}
         run: |
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
           chmod +x gradlew
