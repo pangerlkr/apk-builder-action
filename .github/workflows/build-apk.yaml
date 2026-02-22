@@ -17,9 +17,9 @@ on:
         required: false
         default: ""
       jdkVersion:
-        description: "OpenJDK version to use: 8 / 11 / 17 etc."
+        description: "OpenJDK version to use: 8 / 11 / 17 / 21 etc."
         required: false
-        default: "17"
+        default: "21"
       taskName:
         description: "build.gradle task name: assembleDebug, assembleRelease, etc."
         required: false
