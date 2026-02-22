@@ -68,6 +68,14 @@ jobs:
           fi
 
           echo "Building in directory: $BUILD_DIR"
+
+          # Install npm dependencies if package.json exists (required for Capacitor/Ionic projects)
+          # so that node_modules/@capacitor/android/capacitor is present before Gradle runs
+          if [ -f "package.json" ]; then
+            echo "Found package.json, running npm install..."
+            npm install
+          fi
+
           cd "$BUILD_DIR"
 
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
