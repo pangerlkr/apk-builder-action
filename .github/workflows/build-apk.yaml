@@ -50,19 +50,17 @@ jobs:
           if [[ -n "${{ github.event.inputs.subdir }}" ]]; then
             BUILD_DIR="${{ github.event.inputs.subdir }}"
           else
-            # Check if Gradle build files exist in the current directory
-            if [ -f "settings.gradle" ] || [ -f "settings.gradle.kts" ] || [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
-              BUILD_DIR="."
+            # Search for settings.gradle or settings.gradle.kts recursively (best indicator of Gradle root)
+            # maxdepth 4 covers common nesting patterns (e.g. root/platform/android/app) without being too broad
+            FOUND=$(find . -maxdepth 4 \( -name "settings.gradle" -o -name "settings.gradle.kts" \) | sort | head -1)
+            if [ -n "$FOUND" ]; then
+              BUILD_DIR=$(dirname "$FOUND")
             else
-              # Search for Gradle build in common subdirectories
-              for dir in android app src .; do
-                if [ -f "$dir/settings.gradle" ] || [ -f "$dir/settings.gradle.kts" ] || [ -f "$dir/build.gradle" ] || [ -f "$dir/build.gradle.kts" ]; then
-                  BUILD_DIR="$dir"
-                  break
-                fi
-              done
-
-              if [ -z "$BUILD_DIR" ]; then
+              # Fall back to searching for build.gradle or build.gradle.kts
+              FOUND=$(find . -maxdepth 4 \( -name "build.gradle" -o -name "build.gradle.kts" \) | sort | head -1)
+              if [ -n "$FOUND" ]; then
+                BUILD_DIR=$(dirname "$FOUND")
+              else
                 echo "Error: Could not find Gradle build files. Please specify the 'subdir' input parameter."
                 exit 1
               fi
@@ -73,7 +71,17 @@ jobs:
           cd "$BUILD_DIR"
 
           if [ ! -f "gradlew" ]; then gradle wrapper; fi
+          # Fix potential Windows-style CRLF line endings in gradlew
+          if file gradlew | grep -q CRLF; then
+            echo "Normalizing gradlew line endings (CRLF -> LF)..."
+            sed -i 's/\r//' gradlew
+          fi
           chmod +x gradlew
+
+          # Create local.properties with SDK path if it doesn't exist (required by some projects)
+          if [ ! -f "local.properties" ]; then
+            echo "sdk.dir=$ANDROID_HOME" > local.properties
+          fi
 
           if [[ "${{ github.event.inputs.taskName }}" == *Release* ]]; then
             echo "Task contains 'Release', attempting to sign a release build with a debug key."
